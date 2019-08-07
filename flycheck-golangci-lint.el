@@ -87,8 +87,12 @@ See URL `https://github.com/golangci/golangci-lint'."
             (option-list "--enable=" flycheck-golangci-lint-enable-linters concat)
             ".")
   :error-patterns
-  ((error line-start (file-name) ":" line ":" column ": " (message) line-end)
-   (error line-start (file-name) ":" line ":" (message) line-end))
+  ((info line-start (file-name) ":" line ":" column ": " (message) " (gosimple)" line-end)
+   (info line-start (file-name) ":" line ": " (message) " (gosimple)" line-end)
+   (warning line-start (file-name) ":" line ":" column ": " (message) " (gocritic)" line-end)
+   (warning line-start (file-name) ":" line ": " (message) " (gocritic)" line-end)
+   (error line-start (file-name) ":" line ":" column ": " (message) line-end)
+   (error line-start (file-name) ":" line ": " (message) line-end))
   :modes go-mode)
 
 ;;;###autoload
@@ -96,7 +100,8 @@ See URL `https://github.com/golangci/golangci-lint'."
   "Setup Flycheck GolangCI-Lint.
 Add `golangci-lint' to `flycheck-checkers'."
   (interactive)
-  (add-to-list 'flycheck-checkers 'golangci-lint))
+  (add-to-list 'flycheck-checkers 'golangci-lint)
+  (flycheck-add-next-checker 'golangci-lint 'go-build))
 
 (provide 'flycheck-golangci-lint)
 ;;; flycheck-golangci-lint.el ends here
