@@ -97,6 +97,8 @@ See URL `https://github.com/golangci/golangci-lint'."
    (warning line-start (file-name) ":" line ": " (message) " (gocritic)" line-end)
    (warning line-start (file-name) ":" line ":" column ": shadow: " (message) " (govet)" line-end)
    (warning line-start (file-name) ":" line ": shadow: " (message) " (govet)" line-end)
+   (warning line-start (file-name) ":" line ":" column ": unreachable: " (message) " (govet)" line-end)
+   (warning line-start (file-name) ":" line ": unreachable: " (message) " (govet)" line-end)
    (error line-start (file-name) ":" line ":" column ": " (message) line-end)
    (error line-start (file-name) ":" line ": " (message) line-end))
   :modes go-mode)
