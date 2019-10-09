@@ -93,6 +93,8 @@ See URL `https://github.com/golangci/golangci-lint'."
    (info line-start (file-name) ":" line ": " (message) " (unused)" line-end)
    (info line-start (file-name) ":" line ":" column ": " (message) " (errcheck)" line-end)
    (info line-start (file-name) ":" line ": " (message) " (errcheck)" line-end)
+   (info line-start (file-name) ":" line ":" column ": yodaStyleExpr: " (message) " (gocritic)" line-end)
+   (info line-start (file-name) ":" line ": yodaStyleExpr" (message) " (gocritic)" line-end)
    (warning line-start (file-name) ":" line ":" column ": " (message) " (gocritic)" line-end)
    (warning line-start (file-name) ":" line ": " (message) " (gocritic)" line-end)
    (warning line-start (file-name) ":" line ":" column ": shadow: " (message) " (govet)" line-end)
@@ -103,15 +105,16 @@ See URL `https://github.com/golangci/golangci-lint'."
    (warning line-start (file-name) ":" line ": " (message) " (golint)" line-end)
    (error line-start (file-name) ":" line ":" column ": " (message) line-end)
    (error line-start (file-name) ":" line ": " (message) line-end))
-  :modes go-mode)
+  :modes go-mode
+  :next-checkers '(info . go-test))
 
 ;;;###autoload
 (defun flycheck-golangci-lint-setup ()
   "Setup Flycheck GolangCI-Lint.
 Add `golangci-lint' to `flycheck-checkers'."
   (interactive)
-  (add-to-list 'flycheck-checkers 'golangci-lint)
-  (flycheck-add-next-checker 'golangci-lint '(info . go-build)))
+  (add-to-list 'flycheck-checkers 'golangci-lint t)
+  (flycheck-add-next-checker 'go-build '(warning . golangci-lint)))
 
 (provide 'flycheck-golangci-lint)
 ;;; flycheck-golangci-lint.el ends here
