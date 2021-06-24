@@ -95,6 +95,8 @@ See URL `https://github.com/golangci/golangci-lint'."
    (info line-start (file-name) ":" line ": " (message) " (errcheck)" line-end)
    (info line-start (file-name) ":" line ":" column ": yodaStyleExpr: " (message) " (gocritic)" line-end)
    (info line-start (file-name) ":" line ": yodaStyleExpr" (message) " (gocritic)" line-end)
+   (info line-start (file-name) ":" line ":" column ": commentedOutCode: " (message) " (gocritic)" line-end)
+   (info line-start (file-name) ":" line ": commentedOutCode" (message) " (gocritic)" line-end)
    (info line-start (file-name) ":" line ":" column ": " (message) " (unparam)" line-end)
    (info line-start (file-name) ":" line ": " (message) " (unparam)" line-end)
    (warning line-start (file-name) ":" line ":" column ": " (message) " (gocritic)" line-end)
