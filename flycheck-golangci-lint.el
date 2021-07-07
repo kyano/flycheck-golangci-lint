@@ -109,6 +109,8 @@ See URL `https://github.com/golangci/golangci-lint'."
    (warning line-start (file-name) ":" line ": " (message) " (revive)" line-end)
    (warning line-start (file-name) ":" line ":" column ": " (message) " (bodyclose)" line-end)
    (warning line-start (file-name) ":" line ": " (message) " (bodyclose)" line-end)
+   (warning line-start (file-name) ":" line ":" column ": SA4010: " (message) " (staticcheck)" line-end)
+   (warning line-start (file-name) ":" line ": SA4010: " (message) " (staticcheck)" line-end)
    (error line-start (file-name) ":" line ":" column ": " (message) line-end)
    (error line-start (file-name) ":" line ": " (message) line-end))
   :modes go-mode)
