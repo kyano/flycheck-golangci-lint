@@ -86,33 +86,52 @@ See URL `https://github.com/golangci/golangci-lint'."
             (option-list "--disable=" flycheck-golangci-lint-disable-linters concat)
             (option-list "--enable=" flycheck-golangci-lint-enable-linters concat)
             ".")
-  :error-patterns
-  ((info line-start (file-name) ":" line ":" column ": " (message) " (gosimple)" line-end)
-   (info line-start (file-name) ":" line ": " (message) " (gosimple)" line-end)
-   (info line-start (file-name) ":" line ":" column ": " (message) " (unused)" line-end)
-   (info line-start (file-name) ":" line ": " (message) " (unused)" line-end)
-   (info line-start (file-name) ":" line ":" column ": " (message) " (errcheck)" line-end)
-   (info line-start (file-name) ":" line ": " (message) " (errcheck)" line-end)
-   (info line-start (file-name) ":" line ":" column ": yodaStyleExpr: " (message) " (gocritic)" line-end)
-   (info line-start (file-name) ":" line ": yodaStyleExpr" (message) " (gocritic)" line-end)
-   (info line-start (file-name) ":" line ":" column ": commentedOutCode: " (message) " (gocritic)" line-end)
-   (info line-start (file-name) ":" line ": commentedOutCode" (message) " (gocritic)" line-end)
-   (info line-start (file-name) ":" line ":" column ": " (message) " (unparam)" line-end)
-   (info line-start (file-name) ":" line ": " (message) " (unparam)" line-end)
-   (warning line-start (file-name) ":" line ":" column ": " (message) " (gocritic)" line-end)
-   (warning line-start (file-name) ":" line ": " (message) " (gocritic)" line-end)
-   (warning line-start (file-name) ":" line ":" column ": shadow: " (message) " (govet)" line-end)
-   (warning line-start (file-name) ":" line ": shadow: " (message) " (govet)" line-end)
-   (warning line-start (file-name) ":" line ":" column ": unreachable: " (message) " (govet)" line-end)
-   (warning line-start (file-name) ":" line ": unreachable: " (message) " (govet)" line-end)
-   (warning line-start (file-name) ":" line ":" column ": " (message) " (revive)" line-end)
-   (warning line-start (file-name) ":" line ": " (message) " (revive)" line-end)
-   (warning line-start (file-name) ":" line ":" column ": " (message) " (bodyclose)" line-end)
-   (warning line-start (file-name) ":" line ": " (message) " (bodyclose)" line-end)
-   (warning line-start (file-name) ":" line ":" column ": SA4010: " (message) " (staticcheck)" line-end)
-   (warning line-start (file-name) ":" line ": SA4010: " (message) " (staticcheck)" line-end)
-   (error line-start (file-name) ":" line ":" column ": " (message) line-end)
-   (error line-start (file-name) ":" line ": " (message) line-end))
+  :error-patterns (
+                   ;; bodyclose
+                   (warning line-start (file-name) ":" line ":" column ": " (message) " (bodyclose)" line-end)
+                   (warning line-start (file-name) ":" line ": " (message) " (bodyclose)" line-end)
+
+                   ;; errcheck
+                   (info line-start (file-name) ":" line ":" column ": " (message) " (errcheck)" line-end)
+                   (info line-start (file-name) ":" line ": " (message) " (errcheck)" line-end)
+
+                   ;; gocritic
+                   (info line-start (file-name) ":" line ":" column ": yodaStyleExpr: " (message) " (gocritic)" line-end)
+                   (info line-start (file-name) ":" line ": yodaStyleExpr" (message) " (gocritic)" line-end)
+                   (info line-start (file-name) ":" line ":" column ": commentedOutCode: " (message) " (gocritic)" line-end)
+                   (info line-start (file-name) ":" line ": commentedOutCode" (message) " (gocritic)" line-end)
+                   (warning line-start (file-name) ":" line ":" column ": " (message) " (gocritic)" line-end)
+                   (warning line-start (file-name) ":" line ": " (message) " (gocritic)" line-end)
+
+                   ;; gosimple
+                   (info line-start (file-name) ":" line ":" column ": " (message) " (gosimple)" line-end)
+                   (info line-start (file-name) ":" line ": " (message) " (gosimple)" line-end)
+
+                   ;; govet
+                   (info line-start (file-name) ":" line ":" column ": unreachable: " (message) " (govet)" line-end)
+                   (info line-start (file-name) ":" line ": unreachable: " (message) " (govet)" line-end)
+                   (warning line-start (file-name) ":" line ":" column ": shadow: " (message) " (govet)" line-end)
+                   (warning line-start (file-name) ":" line ": shadow: " (message) " (govet)" line-end)
+
+                   ;; revive
+                   (warning line-start (file-name) ":" line ":" column ": " (message) " (revive)" line-end)
+                   (warning line-start (file-name) ":" line ": " (message) " (revive)" line-end)
+
+                   ;; staticcheck
+                   (warning line-start (file-name) ":" line ":" column ": SA4010: " (message) " (staticcheck)" line-end)
+                   (warning line-start (file-name) ":" line ": SA4010: " (message) " (staticcheck)" line-end)
+
+                   ;; unparam
+                   (info line-start (file-name) ":" line ":" column ": " (message) " (unparam)" line-end)
+                   (info line-start (file-name) ":" line ": " (message) " (unparam)" line-end)
+
+                   ;; unused
+                   (info line-start (file-name) ":" line ":" column ": " (message) " (unused)" line-end)
+                   (info line-start (file-name) ":" line ": " (message) " (unused)" line-end)
+
+                   ;; All others are treated as `error'
+                   (error line-start (file-name) ":" line ":" column ": " (message) line-end)
+                   (error line-start (file-name) ":" line ": " (message) line-end))
   :modes go-mode)
 
 ;;;###autoload
