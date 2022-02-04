@@ -87,13 +87,9 @@ See URL `https://github.com/golangci/golangci-lint'."
             (option-list "--enable=" flycheck-golangci-lint-enable-linters concat)
             ".")
   :error-patterns (
-                   ;; bodyclose
-                   (warning line-start (file-name) ":" line ":" column ": " (message) " (bodyclose)" line-end)
-                   (warning line-start (file-name) ":" line ": " (message) " (bodyclose)" line-end)
-
                    ;; errcheck
-                   (info line-start (file-name) ":" line ":" column ": " (message) " (errcheck)" line-end)
-                   (info line-start (file-name) ":" line ": " (message) " (errcheck)" line-end)
+                   (warning line-start (file-name) ":" line ":" column ": " (message) " (errcheck)" line-end)
+                   (warning line-start (file-name) ":" line ": " (message) " (errcheck)" line-end)
 
                    ;; gocritic
                    (info line-start (file-name) ":" line ":" column ": yodaStyleExpr: " (message) " (gocritic)" line-end)
@@ -120,6 +116,10 @@ See URL `https://github.com/golangci/golangci-lint'."
                    ;; staticcheck
                    (warning line-start (file-name) ":" line ":" column ": SA4010: " (message) " (staticcheck)" line-end)
                    (warning line-start (file-name) ":" line ": SA4010: " (message) " (staticcheck)" line-end)
+
+                   ;; structcheck
+                   (info line-start (file-name) ":" line ":" column ": " (message) " (structcheck)" line-end)
+                   (info line-start (file-name) ":" line ": " (message) " (structcheck)" line-end)
 
                    ;; unparam
                    (info line-start (file-name) ":" line ":" column ": " (message) " (unparam)" line-end)
