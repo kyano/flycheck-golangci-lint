@@ -110,6 +110,14 @@ See URL `https://github.com/golangci/golangci-lint'."
                    (warning line-start (file-name) ":" line ": shadow: " (message) " (govet)" line-end)
 
                    ;; revive
+                   (info line-start (file-name) ":" line ":" column ": unused-parameter: " (message) " (revive)" line-end)
+                   (info line-start (file-name) ":" line ": unused-parameter: " (message) " (revive)" line-end)
+                   (info line-start (file-name) ":" line ":" column ": get-return: " (message) " (revive)" line-end)
+                   (info line-start (file-name) ":" line ": get-return: " (message) " (revive)" line-end)
+                   (info line-start (file-name) ":" line ":" column ": empty-lines: " (message) " (revive)" line-end)
+                   (info line-start (file-name) ":" line ": empty-lines: " (message) " (revive)" line-end)
+                   (info line-start (file-name) ":" line ":" column ": unused-parameter: " (message) " (revive)" line-end)
+                   (info line-start (file-name) ":" line ": unused-parameter: " (message) " (revive)" line-end)
                    (warning line-start (file-name) ":" line ":" column ": " (message) " (revive)" line-end)
                    (warning line-start (file-name) ":" line ": " (message) " (revive)" line-end)
 
