@@ -36,10 +36,13 @@
 
 (flycheck-def-option-var flycheck-golangci-lint-config nil golangci-lint
   "Path to golangci-lint configuration file if you don't like using default config path .golangci.(yml|toml|json)"
+  :type '(choice (const :tag "default" nil)
+                 (file))
   :safe #'stringp)
 
 (flycheck-def-option-var flycheck-golangci-lint-deadline "1m" golangci-lint
   "Timeout for running golangci-lint, 1m by default."
+  :type '(string)
   :safe #'stringp)
 
 (flycheck-def-option-var flycheck-golangci-lint-tests nil golangci-lint
@@ -136,6 +139,10 @@ See URL `https://github.com/golangci/golangci-lint'."
                    ;; unused
                    (info line-start (file-name) ":" line ":" column ": " (message) " (unused)" line-end)
                    (info line-start (file-name) ":" line ": " (message) " (unused)" line-end)
+
+                   ;; deadcode
+                   (info line-start (file-name) ":" line ":" column ": " (message) " (deadcode)" line-end)
+                   (info line-start (file-name) ":" line ": " (message) " (deadcode)" line-end)
 
                    ;; All others are treated as `error'
                    (error line-start (file-name) ":" line ":" column ": " (message) line-end)
