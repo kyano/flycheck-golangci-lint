@@ -79,7 +79,7 @@
   "A Go syntax checker using golangci-lint that's 5x faster than gometalinter
 
 See URL `https://github.com/golangci/golangci-lint'."
-  :command ("golangci-lint" "run" "--print-issued-lines=false" "--out-format=line-number"
+  :command ("golangci-lint" "run" "--print-issued-lines=false" "--out-format=github-actions"
             (option "--config=" flycheck-golangci-lint-config concat)
             (option "--deadline=" flycheck-golangci-lint-deadline concat)
             (option-flag "--tests" flycheck-golangci-lint-tests)
@@ -90,63 +90,12 @@ See URL `https://github.com/golangci/golangci-lint'."
             (option-list "--enable=" flycheck-golangci-lint-enable-linters concat)
             ".")
   :error-patterns (
-                   ;; errcheck
-                   (warning line-start (file-name) ":" line ":" column ": " (message) " (errcheck)" line-end)
-                   (warning line-start (file-name) ":" line ": " (message) " (errcheck)" line-end)
-
-                   ;; gocritic
-                   (info line-start (file-name) ":" line ":" column ": yodaStyleExpr: " (message) " (gocritic)" line-end)
-                   (info line-start (file-name) ":" line ": yodaStyleExpr" (message) " (gocritic)" line-end)
-                   (info line-start (file-name) ":" line ":" column ": commentedOutCode: " (message) " (gocritic)" line-end)
-                   (info line-start (file-name) ":" line ": commentedOutCode" (message) " (gocritic)" line-end)
-                   (warning line-start (file-name) ":" line ":" column ": " (message) " (gocritic)" line-end)
-                   (warning line-start (file-name) ":" line ": " (message) " (gocritic)" line-end)
-
-                   ;; gosimple
-                   (info line-start (file-name) ":" line ":" column ": " (message) " (gosimple)" line-end)
-                   (info line-start (file-name) ":" line ": " (message) " (gosimple)" line-end)
-
-                   ;; govet
-                   (info line-start (file-name) ":" line ":" column ": unreachable: " (message) " (govet)" line-end)
-                   (info line-start (file-name) ":" line ": unreachable: " (message) " (govet)" line-end)
-                   (warning line-start (file-name) ":" line ":" column ": shadow: " (message) " (govet)" line-end)
-                   (warning line-start (file-name) ":" line ": shadow: " (message) " (govet)" line-end)
-
-                   ;; revive
-                   (info line-start (file-name) ":" line ":" column ": unused-parameter: " (message) " (revive)" line-end)
-                   (info line-start (file-name) ":" line ": unused-parameter: " (message) " (revive)" line-end)
-                   (info line-start (file-name) ":" line ":" column ": get-return: " (message) " (revive)" line-end)
-                   (info line-start (file-name) ":" line ": get-return: " (message) " (revive)" line-end)
-                   (info line-start (file-name) ":" line ":" column ": empty-lines: " (message) " (revive)" line-end)
-                   (info line-start (file-name) ":" line ": empty-lines: " (message) " (revive)" line-end)
-                   (info line-start (file-name) ":" line ":" column ": unused-parameter: " (message) " (revive)" line-end)
-                   (info line-start (file-name) ":" line ": unused-parameter: " (message) " (revive)" line-end)
-                   (warning line-start (file-name) ":" line ":" column ": " (message) " (revive)" line-end)
-                   (warning line-start (file-name) ":" line ": " (message) " (revive)" line-end)
-
-                   ;; staticcheck
-                   (warning line-start (file-name) ":" line ":" column ": SA4010: " (message) " (staticcheck)" line-end)
-                   (warning line-start (file-name) ":" line ": SA4010: " (message) " (staticcheck)" line-end)
-
-                   ;; structcheck
-                   (info line-start (file-name) ":" line ":" column ": " (message) " (structcheck)" line-end)
-                   (info line-start (file-name) ":" line ": " (message) " (structcheck)" line-end)
-
-                   ;; unparam
-                   (info line-start (file-name) ":" line ":" column ": " (message) " (unparam)" line-end)
-                   (info line-start (file-name) ":" line ": " (message) " (unparam)" line-end)
-
-                   ;; unused
-                   (info line-start (file-name) ":" line ":" column ": " (message) " (unused)" line-end)
-                   (info line-start (file-name) ":" line ": " (message) " (unused)" line-end)
-
-                   ;; deadcode
-                   (info line-start (file-name) ":" line ":" column ": " (message) " (deadcode)" line-end)
-                   (info line-start (file-name) ":" line ": " (message) " (deadcode)" line-end)
-
-                   ;; All others are treated as `error'
-                   (error line-start (file-name) ":" line ":" column ": " (message) line-end)
-                   (error line-start (file-name) ":" line ": " (message) line-end))
+                   (info line-start "::info file=" (file-name) ",line=" line ",col=" column "::"
+                         (message) line-end)
+                   (warning line-start "::warning file=" (file-name) ",line=" line ",col=" column "::"
+                            (message) line-end)
+                   (error line-start "::error file=" (file-name) ",line=" line ",col=" column "::"
+                          (message) line-end))
   :modes go-mode)
 
 ;;;###autoload
