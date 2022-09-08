@@ -104,7 +104,8 @@ See URL `https://github.com/golangci/golangci-lint'."
 Add `golangci-lint' to `flycheck-checkers'."
   (interactive)
   (add-to-list 'flycheck-checkers 'golangci-lint t)
-  (flycheck-add-next-checker 'go-build '(warning . golangci-lint)))
+  (flycheck-add-next-checker 'go-build '(warning . golangci-lint))
+  (flycheck-add-next-checker 'go-test '(warning . golangci-lint)))
 
 (provide 'flycheck-golangci-lint)
 ;;; flycheck-golangci-lint.el ends here
