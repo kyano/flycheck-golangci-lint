@@ -251,7 +251,7 @@ See URL `https://golangci-lint.run/'."
           ",line=" line ",col=" column "::"
           (message)
           line-end))
-  :modes go-mode)
+  :modes (go-mode go-ts-mode))
 
 ;;;###autoload
 (defun flycheck-golangci-lint-setup ()
