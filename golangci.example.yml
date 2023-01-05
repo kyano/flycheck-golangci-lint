@@ -213,6 +213,9 @@ severity:
     severity: info
   # needs a little more attention
   - linters:
+    - govet
+    severity: warning
+  - linters:
     - staticcheck
     text: "SA4"
     severity: warning
