@@ -72,6 +72,8 @@ linters-settings:
       arguments: [30]
     - name: cognitive-complexity
       arguments: [20]
+    - name: comment-spacings
+      arguments: ["nolint"]
     # disabled
     - name: add-constant
       disabled: true
@@ -149,6 +151,10 @@ severity:
   - linters:
     - revive
     text: "cognitive-complexity:"
+    severity: info
+  - linters:
+    - revive
+    text: "comment-spacings"
     severity: info
   - linters:
     - revive
