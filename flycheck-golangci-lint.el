@@ -241,14 +241,29 @@ See URL `https://golangci-lint.run/'."
          ",line=" line ",col=" column "::"
          (message)
          line-end)
+   (info line-start
+         "::info file=" (file-name)
+         ",line=" line "::"
+         (message)
+         line-end)
    (warning line-start
             "::warning file=" (file-name)
             ",line=" line ",col=" column "::"
             (message)
             line-end)
+   (warning line-start
+            "::warning file=" (file-name)
+            ",line=" line "::"
+            (message)
+            line-end)
    (error line-start
           "::error file=" (file-name)
           ",line=" line ",col=" column "::"
+          (message)
+          line-end)
+   (error line-start
+          "::error file=" (file-name)
+          ",line=" line "::"
           (message)
           line-end))
   :modes (go-mode go-ts-mode))
