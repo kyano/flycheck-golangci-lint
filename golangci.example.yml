@@ -1,5 +1,5 @@
 run:
-  go: "1.20"
+  go: "1.21"
 
 issues:
   exclude-use-default: false
@@ -30,6 +30,7 @@ linters:
   - exportloopref
   - goconst
   - godot
+  - goerr113
   - goprintffuncname
   - gosec
   - nilerr
@@ -39,12 +40,12 @@ linters:
   - predeclared
   - promlinter
   - reassign
+  - rowserrcheck
+  - sqlclosecheck
   - tparallel
   - unconvert
   - unparam
   - usestdlibvars
-  - rowserrcheck
-  - sqlclosecheck
 
 linters-settings:
   errcheck:
@@ -109,9 +110,6 @@ linters-settings:
       disabled: true
     - name: unhandled-error
       disabled: true
-  rowserrcheck:
-    packages:
-    - github.com/jmoiron/sqlx
 
 severity:
   default-severity: error
