@@ -121,6 +121,7 @@ severity:
     - dupl
     - goconst
     - godot
+    - goerr113
     severity: info
   - linters:
     - govet
