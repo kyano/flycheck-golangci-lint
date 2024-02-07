@@ -1,5 +1,5 @@
 run:
-  go: "1.21"
+  go: "1.22"
 
 issues:
   exclude-use-default: false
@@ -13,7 +13,6 @@ linters:
   - govet
   - ineffassign
   - staticcheck
-  - typecheck
   - unused
   # additional meta-linters
   - gocritic
@@ -21,6 +20,7 @@ linters:
   # additional linters
   - asasalint
   - bodyclose
+  - cyclop
   - dupl
   - durationcheck
   - errname
@@ -28,20 +28,28 @@ linters:
   - execinquery
   - exhaustive
   - exportloopref
+  - gocognit
   - goconst
   - godot
-  - goerr113
+  - gofmt
   - goprintffuncname
   - gosec
+  - mirror
+  - musttag
+  - nakedret
   - nilerr
+  - nilnil
   - noctx
   - nolintlint
   - nosprintfhostport
+  - perfsprint
   - predeclared
   - promlinter
+  - protogetter
   - reassign
   - rowserrcheck
   - sqlclosecheck
+  - testifylint
   - tparallel
   - unconvert
   - unparam
@@ -69,10 +77,6 @@ linters-settings:
       arguments:
       - "checkPrivateReceivers"
       - "sayRepetitiveInsteadOfStutters"
-    - name: cyclomatic
-      arguments: [30]
-    - name: cognitive-complexity
-      arguments: [20]
     - name: comment-spacings
       arguments: ["nolint"]
     # disabled
@@ -82,9 +86,13 @@ linters-settings:
       disabled: true
     - name: banned-characters
       disabled: true
-    - name: bool-literal-in-expr
+    - name: bare-return
       disabled: true
     - name: call-to-gc
+      disabled: true
+    - name: cognitive-complexity
+      disabled: true
+    - name: cyclomatic
       disabled: true
     - name: datarace
       disabled: true
@@ -98,7 +106,7 @@ linters-settings:
       disabled: true
     - name: function-length
       disabled: true
-    - name: imports-blacklist
+    - name: imports-blocklist
       disabled: true
     - name: line-length-limit
       disabled: true
@@ -110,6 +118,21 @@ linters-settings:
       disabled: true
     - name: unhandled-error
       disabled: true
+  cyclop:
+    max-complexity: 30
+  exhaustive:
+    check:
+    - switch
+    - map
+  gocognit:
+    min-complexity: 20
+  nakedret:
+    max-func-lines: 0
+  nolintlint:
+    require-explanation: true
+    require-specific: true
+  testifylint:
+    enable-all: true
 
 severity:
   default-severity: error
@@ -118,10 +141,11 @@ severity:
   - linters:
     - gosimple
     - unused
+    - cyclop
     - dupl
+    - gocognit
     - goconst
     - godot
-    - goerr113
     severity: info
   - linters:
     - govet
@@ -145,14 +169,6 @@ severity:
     severity: info
   - linters:
     - revive
-    text: "bare-return:"
-    severity: info
-  - linters:
-    - revive
-    text: "cognitive-complexity:"
-    severity: info
-  - linters:
-    - revive
     text: "comment-spacings"
     severity: info
   - linters:
@@ -166,10 +182,6 @@ severity:
   - linters:
     - revive
     text: "constant-logical-expr:"
-    severity: info
-  - linters:
-    - revive
-    text: "cyclomatic:"
     severity: info
   - linters:
     - revive
@@ -242,6 +254,7 @@ severity:
   - linters:
     - revive
     - exhaustive
+    - gofmt
     - goprintffuncname
     - nolintlint
     severity: warning
