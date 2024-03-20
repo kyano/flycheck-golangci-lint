@@ -40,18 +40,18 @@
 (require 'flycheck)
 
 (flycheck-def-option-var flycheck-golangci-lint-config nil golangci-lint
-  "Read config from file."
+  "Read config from file path"
   :type '(choice (const :tag "Not set" nil)
                  (file))
   :safe #'flycheck-string-or-nil-p)
 
 (flycheck-def-option-var flycheck-golangci-lint-no-config nil golangci-lint
-  "Don't read config."
+  "Don't read config file"
   :type 'boolean
   :safe #'booleanp)
 
 (flycheck-def-option-var flycheck-golangci-lint-go nil golangci-lint
-  "Targeted Go version."
+  "Targeted Go version"
   :type '(choice (const :tag "Not set" nil)
                  string)
   :safe #'flycheck-string-or-nil-p)
@@ -62,31 +62,25 @@
                  string)
   :safe #'flycheck-string-or-nil-p)
 
-(flycheck-def-option-var flycheck-golangci-lint-fast 'not-set golangci-lint
+(flycheck-def-option-var flycheck-golangci-lint-fast nil golangci-lint
   "Run only fast linters from enabled linters set (first run won't be fast)"
-  :type '(choice (const :tag "Not set" not-set)
-                 boolean)
-  :safe #'(defun (obj)
-              (or (symbolp obj)
-                  (booleanp obj))))
+  :type 'boolean
+  :safe #'booleanp)
 
-(flycheck-def-option-var flycheck-golangci-lint-enable-all 'not-set
-                         golangci-lint
+(flycheck-def-option-var flycheck-golangci-lint-enable-all nil golangci-lint
   "Enable all linters"
-  :type '(choice (const :tag "Not set" not-set)
-                 boolean)
-  :safe #'(defun (obj)
-              (or (symbolp obj)
-                  (booleanp obj))))
+  :type 'boolean
+  :safe #'booleanp)
 
-(flycheck-def-option-var flycheck-golangci-lint-disable-all 'not-set
-                         golangci-lint
+(flycheck-def-option-var flycheck-golangci-lint-disable-all nil golangci-lint
   "Disable all linters"
-  :type '(choice (const :tag "Not set" not-set)
-                 boolean)
-  :safe #'(defun (obj)
-              (or (symbolp obj)
-                  (booleanp obj))))
+  :type 'boolean
+  :safe #'booleanp)
+
+(flycheck-def-option-var flycheck-golangci-lint-enable-only nil golangci-lint
+  "Override linters configuration section to only run the specific linter(s)"
+  :type '(repeat :tag "Linters" (string :tag "linter"))
+  :safe #'flycheck-string-list-p)
 
 (flycheck-def-option-var flycheck-golangci-lint-enable nil golangci-lint
   "Enable specific linter"
@@ -119,41 +113,39 @@ This option implies option --disable-all"
               (const :tag "unused" unused))
   :safe #'flycheck-symbol-list-p)
 
-(flycheck-def-option-var flycheck-golangci-lint-tests 'not-set golangci-lint
+(flycheck-def-option-var flycheck-golangci-lint-tests nil golangci-lint
   "Analyze tests (*_test.go) (default true)"
-  :type '(choice (const :tag "Not set" not-set)
-                 boolean)
-  :safe #'(defun (obj)
-              (or (symbolp obj)
-                  (booleanp obj))))
+  :type 'boolean
+  :safe #'booleanp)
 
-(flycheck-def-option-var flycheck-golangci-lint-skip-files nil golangci-lint
-  "Regexps of files to skip"
-  :type '(repeat :tag "Skip" (string :tag "regexp"))
+(flycheck-def-option-var flycheck-golangci-lint-exclude-files nil golangci-lint
+  "Regexps of files to exclude"
+  :type '(repeat :tag "Exclude" (string :tag "regexp"))
   :safe #'flycheck-string-list-p)
 
-(flycheck-def-option-var flycheck-golangci-lint-skip-dirs-use-default 'not-set
-                         golangci-lint
-  "Use or not use default excluded directories (default true)"
-  :type '(choice (const :tag "Not set" not-set)
-                 boolean)
-  :safe #'(defun (obj)
-              (or (symbolp obj)
-                  (booleanp obj))))
+(flycheck-def-option-var flycheck-golangci-lint-exclude-dirs-use-default nil golangci-lint
+  "Use or not use default excluded directories (default true)
 
-(flycheck-def-option-var flycheck-golangci-lint-skip-dirs nil golangci-lint
-  "Regexps of directories to skip"
-  :type '(repeat :tag "Skip" (string :tag "regexp"))
+- (^|/)vendor($|/)
+- (^|/)third_party($|/)
+- (^|/)testdata($|/)
+- (^|/)examples($|/)
+- (^|/)Godeps($|/)
+- (^|/)builtin($|/)"
+  :type 'boolean
+  :safe #'booleanp)
+
+(flycheck-def-option-var flycheck-golangci-lint-exclude-dirs nil golangci-lint
+  "Regexps of directories to exclude"
+  :type '(repeat :tag "Exclude" (string :tag "regexp"))
   :safe #'flycheck-string-list-p)
 
-(flycheck-def-option-var flycheck-golangci-lint-exclude-use-default 'not-set
-                         golangci-lint
-  "Use or not use default excludes (default true)"
-  :type '(choice (const :tag "Not set" not-set)
-                 boolean)
-  :safe #'(defun (obj)
-              (or (symbolp obj)
-                  (booleanp obj))))
+(flycheck-def-option-var flycheck-golangci-lint-exclude-use-default nil golangci-lint
+  "Use or not use default excludes (default true)
+
+See the official help `golangci-lint run --help'"
+  :type 'boolean
+  :safe #'booleanp)
 
 (flycheck-def-option-var flycheck-golangci-lint-exclude nil golangci-lint
   "Exclude issue by regexp"
@@ -163,77 +155,34 @@ This option implies option --disable-all"
 (flycheck-define-checker golangci-lint
   "Fast linters runner for Go
 
-See URL `https://golangci-lint.run/'."
+See URL `https://golangci-lint.run/'"
   :command ("golangci-lint" "run"
             "--print-issued-lines=false"
             "--out-format=github-actions"
-            (config-file "--configfile=" flycheck-golangci-lint-config)
+            (config-file "--config" flycheck-golangci-lint-config)
             (option-flag "--no-config" flycheck-golangci-lint-no-config)
-            (option "--go=" flycheck-golangci-lint-go concat)
-            (option "--timeout=" flycheck-golangci-lint-timeout concat)
-            (eval (unless
-                      (string= (symbol-name flycheck-golangci-lint-fast)
-                               "not-set")
-                    (if flycheck-golangci-lint-fast
-                        "--fast=true"
-                      "--fast=false")))
-            (eval (unless
-                      (string= (symbol-name flycheck-golangci-lint-enable-all)
-                               "not-set")
-                    (if flycheck-golangci-lint-enable-all
-                        "--enable-all=true"
-                      "--enable-all=false")))
-            (eval (unless
-                      (string= (symbol-name flycheck-golangci-lint-disable-all)
-                               "not-set")
-                    (if flycheck-golangci-lint-disable-all
-                        "--disable-all=true"
-                      "--disable-all=false")))
-            (eval (when flycheck-golangci-lint-enable
-                    (concat "--enable="
-                            (string-join flycheck-golangci-lint-enable
-                                         ","))))
-            (eval (when flycheck-golangci-lint-disable
-                    (concat "--disable="
-                            (string-join flycheck-golangci-lint-disable
-                                         ","))))
-            (eval (when flycheck-golangci-lint-presets
-                    (concat "--presets="
-                            (mapconcat #'symbol-name
-                                       flycheck-golangci-lint-presets
-                                       ","))))
-            (eval (unless
-                      (string= (symbol-name flycheck-golangci-lint-tests)
-                               "not-set")
-                    (if flycheck-golangci-lint-tests
-                        "--tests=true"
-                      "--tests=false")))
-            (eval (when flycheck-golangci-lint-skip-files
-                    (concat "--skip-files="
-                            (string-join flycheck-golangci-lint-skip-files
-                                         ","))))
-            (eval (unless
-                      (string= (symbol-name
-                                flycheck-golangci-lint-skip-dirs-use-default)
-                               "not-set")
-                    (if flycheck-golangci-lint-skip-dirs-use-default
-                        "--skip-dirs-use-default=true"
-                      "--skip-dirs-use-default=false")))
-            (eval (when flycheck-golangci-lint-skip-dirs
-                    (concat "--skip-dirs="
-                            (string-join flycheck-golangci-lint-skip-dirs
-                                         ","))))
-            (eval (unless
-                      (string= (symbol-name
-                                flycheck-golangci-lint-exclude-use-default)
-                               "not-set")
-                    (if flycheck-golangci-lint-exclude-use-default
-                        "--exclude-use-default=true"
-                      "--exclude-use-default=false")))
-            (eval (when flycheck-golangci-lint-exclude
-                    (concat "--exclude="
-                            (string-join flycheck-golangci-lint-exclude
-                                         ","))))
+            (option "--go" flycheck-golangci-lint-go)
+            (option "--timeout" flycheck-golangci-lint-timeout)
+            (option-flag "--fast" flycheck-golangci-lint-fast)
+            (option-flag "--enable-all" flycheck-golangci-lint-enable-all)
+            (option-flag "--disable-all" flycheck-golangci-lint-disable-all)
+            (option "--enable-only" flycheck-golangci-lint-enable-only
+                    list flycheck-option-comma-separated-list)
+            (option "--enable" flycheck-golangci-lint-enable
+                    list flycheck-option-comma-separated-list)
+            (option "--disable" flycheck-golangci-lint-disable
+                    list flycheck-option-comma-separated-list)
+            (option "--presets" flycheck-golangci-lint-presets
+                    list flycheck-option-comma-separated-list)
+            (option-flag "--tests" flycheck-golangci-lint-tests)
+            (option "--exclude-files" flycheck-golangci-lint-exclude-files
+                    list flycheck-option-comma-separated-list)
+            (option-flag "--exclude-dirs-use-default" flycheck-golangci-lint-exclude-dirs-use-default)
+            (option "--exclude-dirs" flycheck-golangci-lint-exclude-dirs
+                    list flycheck-option-comma-separated-list)
+            (option-flag "--exclude-use-default" flycheck-golangci-lint-exclude-use-default)
+            (option "--exclude" flycheck-golangci-lint-exclude
+                    list flycheck-option-comma-separated-list)
             ".")
   :error-patterns
   ((info line-start
@@ -243,6 +192,16 @@ See URL `https://golangci-lint.run/'."
          line-end)
    (info line-start
          "::info file=" (file-name)
+         ",line=" line "::"
+         (message)
+         line-end)
+   (info line-start
+         "::low file=" (file-name)
+         ",line=" line ",col=" column "::"
+         (message)
+         line-end)
+   (info line-start
+         "::low file=" (file-name)
          ",line=" line "::"
          (message)
          line-end)
@@ -256,6 +215,16 @@ See URL `https://golangci-lint.run/'."
             ",line=" line "::"
             (message)
             line-end)
+   (warning line-start
+            "::medium file=" (file-name)
+            ",line=" line ",col=" column "::"
+            (message)
+            line-end)
+   (warning line-start
+            "::medium file=" (file-name)
+            ",line=" line "::"
+            (message)
+            line-end)
    (error line-start
           "::error file=" (file-name)
           ",line=" line ",col=" column "::"
@@ -263,6 +232,16 @@ See URL `https://golangci-lint.run/'."
           line-end)
    (error line-start
           "::error file=" (file-name)
+          ",line=" line "::"
+          (message)
+          line-end)
+   (error line-start
+          "::high file=" (file-name)
+          ",line=" line ",col=" column "::"
+          (message)
+          line-end)
+   (error line-start
+          "::high file=" (file-name)
           ",line=" line "::"
           (message)
           line-end))

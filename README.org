@@ -1,0 +1,179 @@
+* flycheck-golangci-lint
+
+=Flycheck= syntax checker for =golangci-lint=.
+
+
+** Install
+
+With =use-package= that is installed by default since Emacs 30,
+
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck-golangci-lint
+    :ensue t
+    :vc (flycheck-golangci-lint
+         :url "https://github.com/kyano/flycheck-golangci-lint.git"
+         :branch "master")
+    :after flycheck
+    :hook (flycheck-mode . flycheck-golangci-lint-setup))
+#+END_SRC
+
+
+** Customization options
+
+*** =flycheck-golangci-lint-go=
+
+Targeted Go version.
+
+- Command line argument: ~--go~
+- Default value: ~nil~
+- Default value of =golangci-lint=: unspecified
+
+
+*** =flycheck-golangci-lint-config=
+
+Read config from file path.
+
+- Command line argument: ~--config~
+- Default value: ~nil~
+- Default value of =golangci-lint=: unspecified
+
+
+*** =flycheck-golangci-lint-no-config=
+
+Don't read config file.
+
+- Command line argument: ~--no-config~
+- Default value: ~nil~
+- Default value of =golangci-lint=: unspecified
+
+
+*** =flycheck-golangci-lint-timeout=
+
+Timeout for total work.
+
+- Command line argument: ~--timeout~
+- Default value: ~nil~
+- Default value of =golangci-lint=: `1m0s'
+
+
+*** =flycheck-golangci-lint-enable-all=
+
+Enable all linters.
+
+- Command line argument: ~--enable-all~
+- Default value: ~nil~
+- Default value of =golangci-lint=: unspecified
+
+
+*** =flycheck-golangci-lint-disable-all=
+
+Disable all linters.
+
+- Command line argument: ~--disable-all~
+- Default value: ~nil~
+- Default value of =golangci-lint=: unspecified
+
+
+*** =flycheck-golangci-lint-enable=
+
+Enable specific linter.
+
+- Command line argument: ~--enable~
+- Default value: ~nil~
+- Default value of =golangci-lint=: unspecified
+
+*** =flycheck-golangci-lint-disable=
+
+Disable specific linter.
+
+- Command line argument: ~--disable~
+- Default value: ~nil~
+- Default value of =golangci-lint=: unspecified
+
+
+*** =flycheck-golangci-lint-enable-only=
+
+Override linters configuration section to only run the specific linter(s).
+
+- Command line argument: ~--enable-only~
+- Default value: ~nil~
+- Default value of =golangci-lint=: unspecified
+
+
+*** =flycheck-golangci-lint-fast=
+
+Run only fast linters from enabled linters set (first run won't be fast).
+
+- Command line argument: ~--fast~
+- Default value: ~nil~
+- Default value of =golangci-lint=: unspecified
+
+
+*** =flycheck-golangci-lint-presets=
+
+Enable presets of linters.
+
+Run ~golangci-lint linters~ to see them. \\
+This option implies option ~--disable-all~.
+
+- Command line argument: ~--presets~
+- Default value: ~nil~
+- Default value of =golangci-lint=: unspecified
+
+
+*** =flycheck-golangci-lint-tests=
+
+Analyze tests (~*_test.go~).
+
+- Command line argument: ~--tests~
+- Default value: ~nil~
+- Default value of =golangci-lint=: ~true~
+
+
+*** =flycheck-golangci-lint-exclude-use-default=
+
+Use or not use default excludes.
+
+See the official help ~golangci-lint run --help~.
+
+- Command line argument: ~--exclude-use-default~
+- Default value: ~nil~
+- Default value of =golangci-lint=: ~true~
+
+
+*** =flycheck-golangci-lint-exclude=
+
+Exclude issue by regexp.
+
+- Command line argument: ~--exclude~
+- Default value: ~nil~
+- Default value of =golangci-lint=: unspecified
+
+
+*** =flycheck-golangci-lint-exclude-files=
+
+Regexps of files to exclude.
+
+- Command line argument: ~--exclude-files~
+- Default value: ~nil~
+- Default value of =golangci-lint=: unspecified
+
+
+*** =flycheck-golangci-lint-exclude-dirs=
+
+Regexps of directories to exclude.
+
+- Command line argument: ~--exclude-dirs~
+- Default value: ~nil~
+- Default value of =golangci-lint=: unspecified
+
+
+*** =flycheck-golangci-lint-exclude-dirs-use-default=
+
+Use or not use default excluded directories.
+
+See the official help ~golangci-lint run --help~.
+
+- Command line argument: ~--exclude-dirs-use-default~
+- Default value: ~nil~
+- Default value of =golangci-lint=: ~true~

@@ -3,6 +3,8 @@ run:
 
 issues:
   exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0
 
 linters:
   disable-all: true
@@ -61,7 +63,6 @@ linters-settings:
     check-type-assertions: true
   govet:
     enable-all: true
-    check-shadowing: true
     settings:
       shadow:
         strict: true
@@ -78,30 +79,33 @@ linters-settings:
     - name: context-keys-type
     - name: dot-imports
     - name: empty-block
-      # disabled: true
+      severity: info
     - name: error-naming
     - name: error-return
     - name: error-strings
+      severity: info
     - name: errorf
     - name: exported
+      severity: info
       arguments:
       - "checkPrivateReceivers"
       - "sayRepetitiveInsteadOfStutters"
     - name: increment-decrement
     - name: indent-error-flow
     - name: package-comments
+      severity: info
     - name: range
     - name: receiver-naming
     - name: redefines-builtin-id
       # disabled: true
     - name: superfluous-else
-      # disabled: true
+      severity: info
     - name: time-naming
     - name: unexported-return
     - name: unreachable-code
       # disabled: true
     - name: unused-parameter
-      # disabled: true
+      severity: info
     - name: var-declaration
     - name: var-naming
   cyclop:
@@ -121,8 +125,13 @@ linters-settings:
     enable-all: true
 
 severity:
-  default-severity: error
+  default-severity: "error"
   rules:
+  # use defaults from the linters
+  - linters:
+    - gosec
+    - revive
+    severity: "@linter"
   # not important
   - linters:
     - cyclop
@@ -154,30 +163,6 @@ severity:
     - gocritic
     text: "commentFormatting:"
     severity: info
-  - linters:
-    - revive
-    text: "empty-block:"
-    severity: info
-  - linters:
-    - revive
-    text: "error-strings:"
-    severity: info
-  - linters:
-    - revive
-    text: "exported:"
-    severity: info
-  - linters:
-    - revive
-    text: "package-comments:"
-    severity: info
-  - linters:
-    - revive
-    text: "superfluous-else:"
-    severity: info
-  - linters:
-    - revive
-    text: "unused-parameter:"
-    severity: info
   # needs a little more attention
   - linters:
     - govet
@@ -207,6 +192,5 @@ severity:
     - gofmt
     - goprintffuncname
     - nolintlint
-    - revive
     - testifylint
     severity: warning
