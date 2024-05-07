@@ -27,9 +27,9 @@ linters:
   - durationcheck
   - errname
   - errorlint
-  - execinquery
   - exhaustive
   - exportloopref
+  - fatcontext
   - gocognit
   - goconst
   - godot

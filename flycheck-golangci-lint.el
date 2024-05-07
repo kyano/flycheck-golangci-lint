@@ -1,13 +1,13 @@
 ;;; flycheck-golangci-lint.el --- Flycheck checker for golangci-lint -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022 Anho Ki
+;; Copyright (C) 2022, 2024 Anho Ki
 ;; Copyright (C) 2018 Wei Jian Gan
 
 ;; Author: Wei Jian Gan <weijiangan@outlook.com>
 ;; Maintainer: Anho Ki
 ;; URL: https://github.com/kyano/flycheck-golangci-lint
 ;; Keywords: convenience, tools, go
-;; Version: 0.2.0
+;; Version: 0.2.1
 ;; Package-Requires: ((emacs "24.4") (flycheck "32"))
 
 ;; This file is not part of GNU Emacs.
@@ -152,13 +152,43 @@ See the official help `golangci-lint run --help'"
   :type '(repeat :tag "Exclude" (string :tag "regexp"))
   :safe #'flycheck-string-list-p)
 
+(defun flycheck-golangci-lint-output-parse (output checker buffer)
+  "Parse JSON formatted `golangci-lini' errors from OUTPUT.
+
+CHECKER and BUFFER denoted the CHECKER that returned OUTPUT and
+the BUFFER that was checked respectively."
+  (let ((msg (car (flycheck-parse-json output)))
+        (errors))
+    (let-alist msg
+      (dolist (issue .Issues)
+        (let-alist issue
+          (push
+           (flycheck-error-new-at
+            .Pos.Line
+            .Pos.Column
+            (pcase .Severity
+              (`"error" 'error)
+              (`"high" 'error)
+              (`"warning" 'warning)
+              (`"medium" 'warning)
+              (`"info" 'info)
+              (`"low" 'info)
+              (_ 'warning))
+            .Text
+            :checker checker
+            :id .FromLinter
+            :buffer buffer
+            :filename .Pos.Filename)
+           errors))))
+    (nreverse errors)))
+
 (flycheck-define-checker golangci-lint
   "Fast linters runner for Go
 
 See URL `https://golangci-lint.run/'"
   :command ("golangci-lint" "run"
             "--print-issued-lines=false"
-            "--out-format=github-actions"
+            "--out-format=json"
             (config-file "--config" flycheck-golangci-lint-config)
             (option-flag "--no-config" flycheck-golangci-lint-no-config)
             (option "--go" flycheck-golangci-lint-go)
@@ -182,69 +212,8 @@ See URL `https://golangci-lint.run/'"
                     list flycheck-option-comma-separated-list)
             (option-flag "--exclude-use-default" flycheck-golangci-lint-exclude-use-default)
             (option "--exclude" flycheck-golangci-lint-exclude
-                    list flycheck-option-comma-separated-list)
-            ".")
-  :error-patterns
-  ((info line-start
-         "::info file=" (file-name)
-         ",line=" line ",col=" column "::"
-         (message)
-         line-end)
-   (info line-start
-         "::info file=" (file-name)
-         ",line=" line "::"
-         (message)
-         line-end)
-   (info line-start
-         "::low file=" (file-name)
-         ",line=" line ",col=" column "::"
-         (message)
-         line-end)
-   (info line-start
-         "::low file=" (file-name)
-         ",line=" line "::"
-         (message)
-         line-end)
-   (warning line-start
-            "::warning file=" (file-name)
-            ",line=" line ",col=" column "::"
-            (message)
-            line-end)
-   (warning line-start
-            "::warning file=" (file-name)
-            ",line=" line "::"
-            (message)
-            line-end)
-   (warning line-start
-            "::medium file=" (file-name)
-            ",line=" line ",col=" column "::"
-            (message)
-            line-end)
-   (warning line-start
-            "::medium file=" (file-name)
-            ",line=" line "::"
-            (message)
-            line-end)
-   (error line-start
-          "::error file=" (file-name)
-          ",line=" line ",col=" column "::"
-          (message)
-          line-end)
-   (error line-start
-          "::error file=" (file-name)
-          ",line=" line "::"
-          (message)
-          line-end)
-   (error line-start
-          "::high file=" (file-name)
-          ",line=" line ",col=" column "::"
-          (message)
-          line-end)
-   (error line-start
-          "::high file=" (file-name)
-          ",line=" line "::"
-          (message)
-          line-end))
+                    list flycheck-option-comma-separated-list))
+  :error-parser flycheck-golangci-lint-output-parse
   :modes (go-mode go-ts-mode))
 
 ;;;###autoload
