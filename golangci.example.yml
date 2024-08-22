@@ -22,13 +22,13 @@ linters:
   # additional linters
   - asasalint
   - bodyclose
+  - copyloopvar
   - cyclop
   - dupl
   - durationcheck
   - errname
   - errorlint
   - exhaustive
-  - exportloopref
   - fatcontext
   - gocognit
   - goconst
