@@ -90,6 +90,7 @@ linters-settings:
       arguments:
       - "checkPrivateReceivers"
       - "sayRepetitiveInsteadOfStutters"
+      - "checkPublicInterface"
     - name: increment-decrement
     - name: indent-error-flow
     - name: package-comments
