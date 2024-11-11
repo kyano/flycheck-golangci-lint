@@ -1,5 +1,5 @@
 run:
-  go: "1.22"
+  go: "1.23"
 
 issues:
   exclude-use-default: false
@@ -61,6 +61,10 @@ linters:
 linters-settings:
   errcheck:
     check-type-assertions: true
+    disable-default-exclusions: true
+    exclude-functions:
+    - fmt.Print
+    - fmt.Printf
   govet:
     enable-all: true
     settings:
@@ -90,6 +94,7 @@ linters-settings:
       arguments:
       - "checkPrivateReceivers"
       - "sayRepetitiveInsteadOfStutters"
+      - "checkPublicInterface"
     - name: increment-decrement
     - name: indent-error-flow
     - name: package-comments
