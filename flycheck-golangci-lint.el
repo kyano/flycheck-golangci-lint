@@ -1,13 +1,13 @@
 ;;; flycheck-golangci-lint.el --- Flycheck checker for golangci-lint -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022, 2024 Anho Ki
+;; Copyright (C) 2022, 2024, 2025 Anho Ki
 ;; Copyright (C) 2018 Wei Jian Gan
 
 ;; Author: Wei Jian Gan <weijiangan@outlook.com>
 ;; Maintainer: Anho Ki
 ;; URL: https://github.com/kyano/flycheck-golangci-lint
 ;; Keywords: convenience, tools, go
-;; Version: 0.2.1
+;; Version: 0.3.0
 ;; Package-Requires: ((emacs "24.4") (flycheck "32"))
 
 ;; This file is not part of GNU Emacs.
@@ -50,35 +50,17 @@
   :type 'boolean
   :safe #'booleanp)
 
-(flycheck-def-option-var flycheck-golangci-lint-go nil golangci-lint
-  "Targeted Go version"
+(flycheck-def-option-var flycheck-golangci-lint-default nil golangci-lint
+  "Default set of linters to enable"
   :type '(choice (const :tag "Not set" nil)
-                 string)
-  :safe #'flycheck-string-or-nil-p)
+                 (const :tag "standard" standard)
+                 (const :tag "all" all)
+                 (const :tag "none" none)
+                 (const :tag "fast" fast))
+  :safe #'symbolp)
 
-(flycheck-def-option-var flycheck-golangci-lint-timeout nil golangci-lint
-  "Timeout for total work (default 1m0s)"
-  :type '(choice (const :tag "Not set" nil)
-                 string)
-  :safe #'flycheck-string-or-nil-p)
-
-(flycheck-def-option-var flycheck-golangci-lint-fast nil golangci-lint
-  "Run only fast linters from enabled linters set (first run won't be fast)"
-  :type 'boolean
-  :safe #'booleanp)
-
-(flycheck-def-option-var flycheck-golangci-lint-enable-all nil golangci-lint
-  "Enable all linters"
-  :type 'boolean
-  :safe #'booleanp)
-
-(flycheck-def-option-var flycheck-golangci-lint-disable-all nil golangci-lint
-  "Disable all linters"
-  :type 'boolean
-  :safe #'booleanp)
-
-(flycheck-def-option-var flycheck-golangci-lint-enable-only nil golangci-lint
-  "Override linters configuration section to only run the specific linter(s)"
+(flycheck-def-option-var flycheck-golangci-lint-disable nil golangci-lint
+  "Disable specific linter"
   :type '(repeat :tag "Linters" (string :tag "linter"))
   :safe #'flycheck-string-list-p)
 
@@ -87,70 +69,44 @@
   :type '(repeat :tag "Linters" (string :tag "linter"))
   :safe #'flycheck-string-list-p)
 
-(flycheck-def-option-var flycheck-golangci-lint-disable nil golangci-lint
-  "Disable specific linter"
+(flycheck-def-option-var flycheck-golangci-lint-enable-only nil golangci-lint
+  "Override linters configuration section to only run the specific linter(s)"
   :type '(repeat :tag "Linters" (string :tag "linter"))
   :safe #'flycheck-string-list-p)
 
-(flycheck-def-option-var flycheck-golangci-lint-presets nil golangci-lint
-  "Enable presets of linters.
+(flycheck-def-option-var flycheck-golangci-lint-fast-only nil golangci-lint
+  "Filter enabled linters to run only fast linters"
+  :type 'boolean
+  :safe #'booleanp)
 
-Run `golangci-lint linters' to see them.
-This option implies option --disable-all"
-  :type '(set :tag "Presets"
-              (const :tag "bugs" bugs)
-              (const :tag "comment" comment)
-              (const :tag "complexity" complexity)
-              (const :tag "error" error)
-              (const :tag "format" format)
-              (const :tag "import" import)
-              (const :tag "metalinter" metalinter)
-              (const :tag "module" module)
-              (const :tag "performance" performance)
-              (const :tag "sql" sql)
-              (const :tag "style" style)
-              (const :tag "test" test)
-              (const :tag "unused" unused))
-  :safe #'flycheck-symbol-list-p)
+(flycheck-def-option-var flycheck-golangci-lint-concurrency nil golangci-lint
+  "Number of CPUs to use
+
+Default: Automatically set to match Linux container CPU quota and fall
+back to the number of logical CPUs in the machine"
+  :type 'number
+  :safe #'numberp)
+
+(flycheck-def-option-var flycheck-golangci-lint-modules-download-mode nil golangci-lint
+  "Modules download mode
+
+If not empty, passed as -mod=<mode> to go tools"
+  :type '(choice (const :tag "Not set" nil)
+                 (const :tag "readonly" readonly)
+                 (const :tag "vendor" vendor)
+                 (const :tag "mod" mod))
+  :safe #'symbolp)
+
+(flycheck-def-option-var flycheck-golangci-lint-timeout nil golangci-lint
+  "Timeout for total work"
+  :type '(choice (const :tag "Not set" nil)
+                 string)
+  :safe #'flycheck-string-or-nil-p)
 
 (flycheck-def-option-var flycheck-golangci-lint-tests nil golangci-lint
-  "Analyze tests (*_test.go) (default true)"
+  "Analyze tests (*_test.go)"
   :type 'boolean
   :safe #'booleanp)
-
-(flycheck-def-option-var flycheck-golangci-lint-exclude-files nil golangci-lint
-  "Regexps of files to exclude"
-  :type '(repeat :tag "Exclude" (string :tag "regexp"))
-  :safe #'flycheck-string-list-p)
-
-(flycheck-def-option-var flycheck-golangci-lint-exclude-dirs-use-default nil golangci-lint
-  "Use or not use default excluded directories (default true)
-
-- (^|/)vendor($|/)
-- (^|/)third_party($|/)
-- (^|/)testdata($|/)
-- (^|/)examples($|/)
-- (^|/)Godeps($|/)
-- (^|/)builtin($|/)"
-  :type 'boolean
-  :safe #'booleanp)
-
-(flycheck-def-option-var flycheck-golangci-lint-exclude-dirs nil golangci-lint
-  "Regexps of directories to exclude"
-  :type '(repeat :tag "Exclude" (string :tag "regexp"))
-  :safe #'flycheck-string-list-p)
-
-(flycheck-def-option-var flycheck-golangci-lint-exclude-use-default nil golangci-lint
-  "Use or not use default excludes (default true)
-
-See the official help `golangci-lint run --help'"
-  :type 'boolean
-  :safe #'booleanp)
-
-(flycheck-def-option-var flycheck-golangci-lint-exclude nil golangci-lint
-  "Exclude issue by regexp"
-  :type '(repeat :tag "Exclude" (string :tag "regexp"))
-  :safe #'flycheck-string-list-p)
 
 (defun flycheck-golangci-lint-output-parse (output checker buffer)
   "Parse JSON formatted `golangci-lini' errors from OUTPUT.
@@ -158,7 +114,7 @@ See the official help `golangci-lint run --help'"
 CHECKER and BUFFER denoted the CHECKER that returned OUTPUT and
 the BUFFER that was checked respectively."
   (let ((msg (car (flycheck-parse-json output)))
-        (errors))
+        (errors nil))
     (let-alist msg
       (dolist (issue .Issues)
         (let-alist issue
@@ -167,13 +123,9 @@ the BUFFER that was checked respectively."
             .Pos.Line
             .Pos.Column
             (pcase .Severity
-              (`"error" 'error)
-              (`"high" 'error)
-              (`"warning" 'warning)
-              (`"medium" 'warning)
-              (`"info" 'info)
-              (`"low" 'info)
-              (_ 'warning))
+              ((or "error" "high") 'error)
+              ((or "info" "low") 'info)
+              ((or "warning" "medium" _) 'warning))
             .Text
             :checker checker
             :id .FromLinter
@@ -187,32 +139,29 @@ the BUFFER that was checked respectively."
 
 See URL `https://golangci-lint.run/'"
   :command ("golangci-lint" "run"
-            "--print-issued-lines=false"
-            "--out-format=json"
+            "--output.text.path=/dev/null"
+            "--output.tab.path=/dev/null"
+            "--output.html.path=/dev/null"
+            "--output.checkstyle.path=/dev/null"
+            "--output.code-climate.path=/dev/null"
+            "--output.junit-xml.path=/dev/null"
+            "--output.teamcity.path=/dev/null"
+            "--output.sarif.path=/dev/null"
+            "--output.json.path=stdout"
             (config-file "--config" flycheck-golangci-lint-config)
             (option-flag "--no-config" flycheck-golangci-lint-no-config)
-            (option "--go" flycheck-golangci-lint-go)
-            (option "--timeout" flycheck-golangci-lint-timeout)
-            (option-flag "--fast" flycheck-golangci-lint-fast)
-            (option-flag "--enable-all" flycheck-golangci-lint-enable-all)
-            (option-flag "--disable-all" flycheck-golangci-lint-disable-all)
-            (option "--enable-only" flycheck-golangci-lint-enable-only
+            (option "--default" flycheck-golangci-lint-default)
+            (option "--disable" flycheck-golangci-lint-disable
                     list flycheck-option-comma-separated-list)
             (option "--enable" flycheck-golangci-lint-enable
                     list flycheck-option-comma-separated-list)
-            (option "--disable" flycheck-golangci-lint-disable
+            (option "--enable-only" flycheck-golangci-lint-enable-only
                     list flycheck-option-comma-separated-list)
-            (option "--presets" flycheck-golangci-lint-presets
-                    list flycheck-option-comma-separated-list)
-            (option-flag "--tests" flycheck-golangci-lint-tests)
-            (option "--exclude-files" flycheck-golangci-lint-exclude-files
-                    list flycheck-option-comma-separated-list)
-            (option-flag "--exclude-dirs-use-default" flycheck-golangci-lint-exclude-dirs-use-default)
-            (option "--exclude-dirs" flycheck-golangci-lint-exclude-dirs
-                    list flycheck-option-comma-separated-list)
-            (option-flag "--exclude-use-default" flycheck-golangci-lint-exclude-use-default)
-            (option "--exclude" flycheck-golangci-lint-exclude
-                    list flycheck-option-comma-separated-list))
+            (option-flag "--fast-only" flycheck-golangci-lint-fast-only)
+            (option "--concurrency" flycheck-golangci-lint-concurrency)
+            (option "--modules-download-mode" flycheck-golangci-lint-modules-download-mode)
+            (option "--timeout" flycheck-golangci-lint-timeout)
+            (option-flag "--tests" flycheck-golangci-lint-tests))
   :error-parser flycheck-golangci-lint-output-parse
   :modes (go-mode go-ts-mode))
 

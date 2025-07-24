@@ -1,17 +1,25 @@
+version: "2"
+
 run:
-  go: "1.23"
+  go: "1.24"
+  relative-path-mode: wd
 
 issues:
-  exclude-use-default: false
   max-issues-per-linter: 0
   max-same-issues: 0
 
+output:
+  formats:
+    text:
+      path: stdout
+      print-issued-lines: false
+  show-stats: false
+
 linters:
-  disable-all: true
+  default: none
   enable:
   # golangci-lint defaults
   - errcheck
-  - gosimple
   - govet
   - ineffassign
   - staticcheck
@@ -26,20 +34,26 @@ linters:
   - cyclop
   - dupl
   - durationcheck
+  - embeddedstructfieldcheck
   - errname
   - errorlint
   - exhaustive
   - fatcontext
+  - funcorder
+  - gocheckcompilerdirectives
   - gocognit
   - goconst
   - godot
-  - gofmt
   - goprintffuncname
   - gosec
+  - iface
+  - intrange
+  - makezero
   - mirror
   - musttag
   - nakedret
   - nilerr
+  - nilnesserr
   - nilnil
   - noctx
   - nolintlint
@@ -49,6 +63,7 @@ linters:
   - promlinter
   - protogetter
   - reassign
+  - recvcheck
   - rowserrcheck
   - sloglint
   - sqlclosecheck
@@ -57,105 +72,205 @@ linters:
   - unconvert
   - unparam
   - usestdlibvars
+  settings:
+    # golangci-lint defaults
+    errcheck:
+      check-type-assertions: true
+      disable-default-exclusions: true
+      exclude-functions:
+      - fmt.Print
+      - fmt.Printf
+    govet:
+      enable-all: true
+      settings:
+        shadow:
+          strict: true
+    # additional meta-linters
+    gocritic:
+      enabled-tags:
+      - diagnostic
+      - experimental
+      - performance
+      - style
+    revive:
+      enable-all-rules: true
+      rules:
+      - name: add-constant
+        disabled: true
+      - name: argument-limit
+        disabled: true
+      - name: banned-characters
+        disabled: true
+      - name: bare-return
+        disabled: true
+      - name: cognitive-complexity
+        disabled: true
+      - name: comment-spacings
+        disabled: true
+      - name: comments-density
+        disabled: true
+      - name: confusing-naming
+        disabled: true
+      - name: cyclomatic
+        disabled: true
+      - name: duplicated-imports
+        disabled: true
+      - name: empty-lines
+        disabled: true
+      - name: enforce-map-style
+        disabled: true
+      - name: enforce-repeated-arg-type-style
+        disabled: true
+      - name: enforce-slice-style
+        disabled: true
+      - name: enforce-switch-style
+        disabled: true
+      - name: exported
+        arguments:
+        - checkPrivateReceivers
+        - sayRepetitiveInsteadOfStutters
+        - checkPublicInterface
+      - name: file-header
+        disabled: true
+      - name: file-length-limit
+        disabled: true
+      - name: filename-format
+        disabled: true
+      - name: flag-parameter
+        disabled: true
+      - name: function-length
+        disabled: true
+      - name: function-result-limit
+        disabled: true
+      - name: get-return
+        disabled: true
+      - name: import-alias-naming
+        disabled: true
+      - name: imports-blocklist
+        disabled: true
+      - name: line-length-limit
+        disabled: true
+      - name: max-control-nesting
+        disabled: true
+      - name: max-public-structs
+        disabled: true
+      - name: nested-structs
+        disabled: true
+      - name: range-val-address
+        disabled: true
+      - name: range-val-in-closure
+        disabled: true
+      - name: string-format
+        disabled: true
+      - name: struct-tag
+        disabled: true
+      - name: unchecked-type-assertion
+        disabled: true
+      - name: unhandled-error
+        disabled: true
+    # additional linters
+    cyclop:
+      max-complexity: 30
+    embeddedstructfieldcheck:
+      forbid-mutex: true
+    exhaustive:
+      check:
+      - switch
+      - map
+    gocognit:
+      min-complexity: 20
+    nakedret:
+      max-func-lines: 0
+    nolintlint:
+      require-explanation: true
+      require-specific: true
+    reassign:
+      patterns:
+      - ".*"
+    sloglint:
+      kv-only: true
+      no-global: all
+      context: scope
+    testifylint:
+      enable-all: true
 
-linters-settings:
-  errcheck:
-    check-type-assertions: true
-    disable-default-exclusions: true
-    exclude-functions:
-    - fmt.Print
-    - fmt.Printf
-  govet:
-    enable-all: true
-    settings:
-      shadow:
-        strict: true
-  gocritic:
-    enabled-tags:
-    - diagnostic
-    - style
-    - performance
-    - experimental
-  revive:
-    rules:
-    - name: blank-imports
-    - name: context-as-argument
-    - name: context-keys-type
-    - name: dot-imports
-    - name: empty-block
-      severity: info
-    - name: error-naming
-    - name: error-return
-    - name: error-strings
-      severity: info
-    - name: errorf
-    - name: exported
-      severity: info
-      arguments:
-      - "checkPrivateReceivers"
-      - "sayRepetitiveInsteadOfStutters"
-      - "checkPublicInterface"
-    - name: increment-decrement
-    - name: indent-error-flow
-    - name: package-comments
-      severity: info
-    - name: range
-    - name: receiver-naming
-    - name: redefines-builtin-id
-      # disabled: true
-    - name: superfluous-else
-      severity: info
-    - name: time-naming
-    - name: unexported-return
-    - name: unreachable-code
-      # disabled: true
-    - name: unused-parameter
-      severity: info
-    - name: var-declaration
-    - name: var-naming
-  cyclop:
-    max-complexity: 30
-  exhaustive:
-    check:
-    - switch
-    - map
-  gocognit:
-    min-complexity: 20
-  nakedret:
-    max-func-lines: 0
-  nolintlint:
-    require-explanation: true
-    require-specific: true
-  testifylint:
-    enable-all: true
+formatters:
+  enable:
+  - gofumpt
 
 severity:
-  default-severity: "error"
+  default: warning
   rules:
-  # use defaults from the linters
+  - linters:
+    - revive
+    text: "blank-imports:"
+    severity: info
+  - linters:
+    - revive
+    text: "bool-literal-in-expr:"
+    severity: info
+  - linters:
+    - revive
+    text: "confusing-results:"
+    severity: info
+  - linters:
+    - revive
+    text: "constant-logical-expr:"
+    severity: info
+  - linters:
+    - revive
+    text: "early-return:"
+    severity: info
+  - linters:
+    - revive
+    text: "empty-block:"
+    severity: info
+  - linters:
+    - revive
+    text: "exported:"
+    severity: info
+  - linters:
+    - revive
+    text: "identical-branches:"
+    severity: info
+  - linters:
+    - revive
+    text: "increment-decrement:"
+    severity: info
+  - linters:
+    - revive
+    text: "indent-error-flow:"
+    severity: info
+  - linters:
+    - revive
+    text: "package-comments:"
+    severity: info
+  - linters:
+    - revive
+    text: "unreachable-code:"
+    severity: info
+  - linters:
+    - revive
+    text: "unused-parameter:"
+    severity: info
+  - linters:
+    - revive
+    text: "unused-receiver:"
+    severity: info
   - linters:
     - gosec
     - revive
     severity: "@linter"
-  # not important
   - linters:
-    - cyclop
-    - dupl
-    - gocognit
-    - goconst
-    - godot
-    - gosimple
-    - perfsprint
-    - unused
-    severity: info
-  - linters:
-    - govet
-    text: "fieldalignment:"
-    severity: info
-  - linters:
-    - govet
-    text: "unreachable:"
-    severity: info
+    - bodyclose
+    - copyloopvar
+    - errcheck
+    - nilerr
+    - nilnesserr
+    - nilnil
+    - rowserrcheck
+    - sqlclosecheck
+    severity: error
   - linters:
     - gocritic
     text: "commentedOutCode:"
@@ -168,34 +283,29 @@ severity:
     - gocritic
     text: "commentFormatting:"
     severity: info
-  # needs a little more attention
   - linters:
     - govet
-    severity: warning
+    text: "fieldalignment:"
+    severity: info
   - linters:
-    - staticcheck
-    text: "S1"
-    severity: warning
+    - govet
+    text: "unreachable:"
+    severity: info
   - linters:
-    - staticcheck
-    text: "SA4"
-    severity: warning
-  - linters:
-    - staticcheck
-    text: "SA6"
-    severity: warning
-  - linters:
-    - staticcheck
-    text: "SA9"
-    severity: warning
-  - linters:
-    - staticcheck
-    text: "ST1"
-    severity: warning
-  - linters:
-    - exhaustive
-    - gofmt
-    - goprintffuncname
+    - dupl
+    - embeddedstructfieldcheck
+    - errname
+    - fatcontext
+    - funcorder
+    - gocheckcompilerdirectives
+    - goconst
+    - godot
+    - musttag
+    - nakedret
     - nolintlint
-    - testifylint
-    severity: warning
+    - perfsprint
+    - promlinter
+    - reassign
+    - unparam
+    - unused
+    severity: info
