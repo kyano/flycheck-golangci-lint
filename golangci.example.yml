@@ -168,6 +168,11 @@ linters:
         disabled: true
       - name: unhandled-error
         disabled: true
+      - name: var-naming
+        arguments:
+        - []
+        - []
+        - [ { skipPackageNameChecks: true } ]
     # additional linters
     cyclop:
       max-complexity: 30
