@@ -1,7 +1,8 @@
 version: "2"
 
 run:
-  go: "1.24"
+  go: "1.25"
+  # `wd` is not recommended but required for interoperating with Flycheck.
   relative-path-mode: wd
 
 issues:
@@ -13,41 +14,60 @@ output:
     text:
       path: stdout
       print-issued-lines: false
+  sort-order:
+  - severity
+  - file
+  - linter
   show-stats: false
+
+formatters:
+  enable:
+  - gofumpt
+  settings:
+    gofumpt:
+      extra-rules: true
 
 linters:
   default: none
   enable:
-  # golangci-lint defaults
-  - errcheck
-  - govet
-  - ineffassign
-  - staticcheck
-  - unused
-  # additional meta-linters
-  - gocritic
-  - revive
-  # additional linters
   - asasalint
   - bodyclose
+  - canonicalheader
+  - containedctx
+  - contextcheck
   - copyloopvar
   - cyclop
+  - decorder
   - dupl
   - durationcheck
   - embeddedstructfieldcheck
+  - errcheck
+  # Similar to `revive.error-naming`, but includes additional suffix checking.
   - errname
   - errorlint
   - exhaustive
+  - exptostd
   - fatcontext
   - funcorder
   - gocheckcompilerdirectives
+  - gochecknoglobals
+  - gochecknoinits
+  - gochecksumtype
   - gocognit
   - goconst
+  - gocritic
+  - godoclint
   - godot
+  - gomoddirectives
   - goprintffuncname
   - gosec
+  - gosmopolitan
+  - govet
   - iface
+  - ineffassign
   - intrange
+  - iotamixing
+  - loggercheck
   - makezero
   - mirror
   - musttag
@@ -64,179 +84,163 @@ linters:
   - protogetter
   - reassign
   - recvcheck
+  - revive
   - rowserrcheck
   - sloglint
   - sqlclosecheck
+  - staticcheck
   - testifylint
   - tparallel
   - unconvert
-  - unparam
+  - unused
   - usestdlibvars
+  - usetesting
   settings:
-    # golangci-lint defaults
+    cyclop:
+      max-complexity: 30
+      package-average: 10
     errcheck:
       check-type-assertions: true
       disable-default-exclusions: true
       exclude-functions:
       - fmt.Print
       - fmt.Printf
+      - fmt.Println
+    exhaustive:
+      check:
+      - map
+      - switch
+      default-signifies-exhaustive: true
+    funcorder:
+      alphabetical: true
+    gocognit:
+      min-complexity: 20
+    gocritic:
+      enabled-tags:
+      - diagnostic
+      - style
+      - performance
+    godoclint:
+      default: none
+      enable:
+      - deprecated
+      - no-unused-link
+    gosmopolitan:
+      allow-time-local: true
     govet:
       enable-all: true
       settings:
         shadow:
           strict: true
-    # additional meta-linters
-    gocritic:
-      enabled-tags:
-      - diagnostic
-      - experimental
-      - performance
-      - style
+    nakedret:
+      max-func-lines: 0
+    nilnil:
+      only-two: false
+    nolintlint:
+      require-explanation: true
+      require-specific: true
+    predeclared:
+      qualified-name: true
+    reassign:
+      patterns:
+      - ".*"
     revive:
-      enable-all-rules: true
+      # https://github.com/mgechev/revive?tab=readme-ov-file#recommended-configuration
       rules:
-      - name: add-constant
-        disabled: true
-      - name: argument-limit
-        disabled: true
-      - name: banned-characters
-        disabled: true
-      - name: bare-return
-        disabled: true
-      - name: cognitive-complexity
-        disabled: true
-      - name: comment-spacings
-        disabled: true
-      - name: comments-density
-        disabled: true
-      - name: confusing-naming
-        disabled: true
-      - name: cyclomatic
-        disabled: true
-      - name: duplicated-imports
-        disabled: true
-      - name: empty-lines
-        disabled: true
-      - name: enforce-map-style
-        disabled: true
-      - name: enforce-repeated-arg-type-style
-        disabled: true
-      - name: enforce-slice-style
-        disabled: true
-      - name: enforce-switch-style
-        disabled: true
+      - name: blank-imports
+      - name: context-as-argument
+      - name: context-keys-type
+      - name: dot-imports
+      - name: empty-block
+      - name: error-naming
+      - name: error-return
+      - name: error-strings
+      - name: errorf
       - name: exported
-        arguments:
-        - checkPrivateReceivers
-        - sayRepetitiveInsteadOfStutters
-        - checkPublicInterface
-      - name: file-header
-        disabled: true
-      - name: file-length-limit
-        disabled: true
-      - name: filename-format
-        disabled: true
-      - name: flag-parameter
-        disabled: true
-      - name: function-length
-        disabled: true
-      - name: function-result-limit
-        disabled: true
-      - name: get-return
-        disabled: true
-      - name: import-alias-naming
-        disabled: true
-      - name: imports-blocklist
-        disabled: true
-      - name: line-length-limit
-        disabled: true
-      - name: max-control-nesting
-        disabled: true
-      - name: max-public-structs
-        disabled: true
-      - name: nested-structs
-        disabled: true
-      - name: range-val-address
-        disabled: true
-      - name: range-val-in-closure
-        disabled: true
-      - name: string-format
-        disabled: true
-      - name: struct-tag
-        disabled: true
-      - name: unchecked-type-assertion
-        disabled: true
-      - name: unhandled-error
-        disabled: true
+      - name: increment-decrement
+      - name: indent-error-flow
+      - name: package-comments
+      - name: range
+      - name: receiver-naming
+      - name: redefines-builtin-id
+        severity: error
+      - name: superfluous-else
+      - name: time-naming
+      - name: unexported-return
+        severity: error
+      - name: unreachable-code
+      - name: unused-parameter
+      - name: var-declaration
       - name: var-naming
         arguments:
         - []
         - []
         - [ { skipPackageNameChecks: true } ]
-    # additional linters
-    cyclop:
-      max-complexity: 30
-    embeddedstructfieldcheck:
-      forbid-mutex: true
-    exhaustive:
-      check:
-      - switch
-      - map
-    gocognit:
-      min-complexity: 20
-    nakedret:
-      max-func-lines: 0
-    nolintlint:
-      require-explanation: true
-      require-specific: true
-    reassign:
-      patterns:
-      - ".*"
     sloglint:
-      kv-only: true
       no-global: all
       context: scope
+    staticcheck:
+      checks:
+      - all
     testifylint:
       enable-all: true
-
-formatters:
-  enable:
-  - gofumpt
+    usestdlibvars:
+      http-method: true
+      http-status-code: true
+      time-weekday: true
+      time-month: true
+      time-layout: true
+    usetesting:
+      os-create-temp: true
+      os-mkdir-temp: true
+      os-setenv: true
+      os-temp-dir: true
+      os-chdir: true
+      context-background: false
+      context-todo: false
 
 severity:
-  default: warning
+  default: error
   rules:
   - linters:
-    - revive
-    text: "blank-imports:"
+    - bodyclose
+    - predeclared
+    - rowserrcheck
+    - sqlclosecheck
+    - usestdlibvars
+    severity: error
+  - linters:
+    - canonicalheader
+    - decorder
+    - dupl
+    - funcorder
+    - gochecknoglobals
+    - gochecknoinits
+    - goconst
+    - godoclint
+    - godot
+    - goprintffuncname
+    - gosmopolitan
+    - intrange
+    - nakedret
+    - perfsprint
+    - unused
     severity: info
   - linters:
     - revive
-    text: "bool-literal-in-expr:"
-    severity: info
-  - linters:
-    - revive
-    text: "confusing-results:"
-    severity: info
-  - linters:
-    - revive
-    text: "constant-logical-expr:"
-    severity: info
-  - linters:
-    - revive
-    text: "early-return:"
-    severity: info
+    - gosec
+    severity: "@linter"
   - linters:
     - revive
     text: "empty-block:"
     severity: info
   - linters:
     - revive
-    text: "exported:"
+    text: "error-strings:"
     severity: info
   - linters:
     - revive
-    text: "identical-branches:"
+    text: "errorf:"
     severity: info
   - linters:
     - revive
@@ -248,69 +252,9 @@ severity:
     severity: info
   - linters:
     - revive
-    text: "package-comments:"
+    text: "superfluous-else"
     severity: info
   - linters:
     - revive
     text: "unreachable-code:"
-    severity: info
-  - linters:
-    - revive
-    text: "unused-parameter:"
-    severity: info
-  - linters:
-    - revive
-    text: "unused-receiver:"
-    severity: info
-  - linters:
-    - gosec
-    - revive
-    severity: "@linter"
-  - linters:
-    - bodyclose
-    - copyloopvar
-    - errcheck
-    - nilerr
-    - nilnesserr
-    - nilnil
-    - rowserrcheck
-    - sqlclosecheck
-    severity: error
-  - linters:
-    - gocritic
-    text: "commentedOutCode:"
-    severity: info
-  - linters:
-    - gocritic
-    text: "commentedOutImport:"
-    severity: info
-  - linters:
-    - gocritic
-    text: "commentFormatting:"
-    severity: info
-  - linters:
-    - govet
-    text: "fieldalignment:"
-    severity: info
-  - linters:
-    - govet
-    text: "unreachable:"
-    severity: info
-  - linters:
-    - dupl
-    - embeddedstructfieldcheck
-    - errname
-    - fatcontext
-    - funcorder
-    - gocheckcompilerdirectives
-    - goconst
-    - godot
-    - musttag
-    - nakedret
-    - nolintlint
-    - perfsprint
-    - promlinter
-    - reassign
-    - unparam
-    - unused
     severity: info
