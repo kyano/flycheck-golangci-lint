@@ -200,7 +200,7 @@ linters:
       context-todo: false
 
 severity:
-  default: error
+  default: warning
   rules:
   - linters:
     - bodyclose
