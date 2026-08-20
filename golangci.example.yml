@@ -1,7 +1,7 @@
 version: "2"
 
 run:
-  go: "1.25"
+  go: "1.27"
   # `wd` is not recommended but required for interoperating with Flycheck.
   relative-path-mode: wd
 
@@ -25,7 +25,10 @@ formatters:
   - gofumpt
   settings:
     gofumpt:
-      extra-rules: true
+      extra:
+        group-params: true
+        clothe-returns: true
+        balance-calls: true
 
 linters:
   default: none
@@ -114,6 +117,7 @@ linters:
       default-signifies-exhaustive: true
     funcorder:
       alphabetical: true
+      function: true
     gocognit:
       min-complexity: 20
     gocritic:
