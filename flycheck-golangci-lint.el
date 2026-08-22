@@ -43,7 +43,7 @@
   "Read config from file path"
   :type '(choice (const :tag "Not set" nil)
                  (file))
-  :safe #'flycheck-string-or-nil-p)
+  :safe #'string-or-null-p)
 
 (flycheck-def-option-var flycheck-golangci-lint-no-config nil golangci-lint
   "Don't read config file"
@@ -101,7 +101,7 @@ If not empty, passed as -mod=<mode> to go tools"
   "Timeout for total work"
   :type '(choice (const :tag "Not set" nil)
                  string)
-  :safe #'flycheck-string-or-nil-p)
+  :safe #'string-or-null-p)
 
 (flycheck-def-option-var flycheck-golangci-lint-tests nil golangci-lint
   "Analyze tests (*_test.go)"
