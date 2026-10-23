@@ -112,7 +112,7 @@ linters:
       - fmt.Println
     exhaustive:
       check:
-      - map
+      - mapliteral
       - switch
       default-signifies-exhaustive: true
     funcorder:
